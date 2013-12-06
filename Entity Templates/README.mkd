@@ -1,0 +1,13 @@
+Entity Templates
+==================
+
+WORK IN PROGRESS
+
+This mashup will load story/bug templates into a dropdown so you can select templates for your stories and bug.
+
+TODOs:
+
+* Check if you are at a story that is already a TPTemplate is so, don't continue
+* Move CSS and JS to separate files, so the code will be cleaner.
+* When resizing the browser window the position of "Templates"-dropdown should be recalculated.
+* When resizing the browser and the window gets more narrow, the "more"-tab should be triggered sooner.
