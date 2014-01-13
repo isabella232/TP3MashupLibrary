@@ -1,5 +1,5 @@
 {
-	"ShortDescription": "This mashup will ...",
+	"ShortDescription": "This mashup will load entity templates into a dropdown so you can select templates for your different entities.",
 	"CompatibleTpVersion": {
 		"Minimum": "3.0.0"
 	}

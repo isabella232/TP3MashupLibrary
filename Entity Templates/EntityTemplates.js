@@ -27,11 +27,9 @@ tau.mashups
 							   if (entityTypeText === 'User Story') {
 								   allowProcess = 1;
 								   url = getUrl('UserStory');
-								   console.log('Entity: USER STORY');
 							   }
 							   if (entityTypeText === 'Bug') {
 								   allowProcess = 1;
-								   console.log('Entity: BUG');
 								   url = getUrl('Bug');
 							   }
 						   });
@@ -52,8 +50,8 @@ tau.mashups
 						*/
 					   function getUrl (entityType) {
 						   return {
-									  UserStory: "/api/v1/Userstories?format=json&include=[Description,Name]&where=(tags eq 'TPTEMPLATE')",
-									  Bug: "/api/v1/Bugs?format=json&where=(tags eq 'TPTEMPLATE')"
+									  UserStory: "/api/v1/Userstories?format=json&include=[Description,Name,EntityType]&where=(tags eq 'TPTEMPLATE')",
+									  Bug: "/api/v1/Bugs?format=json&include=[Description,Name,EntityType]&where=(tags eq 'TPTEMPLATE')"
 								  }[entityType] || null
 					   }
 
@@ -75,16 +73,14 @@ tau.mashups
 					   }
 
 					   /**
-						*
+						* Callback function for getJson
 						*
 						* @param data
-						* @returns {{templates: {}}}
 						*/
 					   function createAndPopulateDropdown(data) {
 
 						   templateData = createDropDownHtml(data);
 
-						   console.log(templateData.templates[231]['Description']);
 						   // Inject the css and javascript to head
 						   insertCSS();
 						   insertJS();
@@ -97,12 +93,30 @@ tau.mashups
 						* @param data
 						* @returns {array}
 						*/
-
 					   function createDropDownHtml(data) {
+
+						   var dropdownSelector = '';
+						   var dropdownContent = '';
+
+						   // Reset Dropdown content before building dropdown.
+						   $('#TpTemplate1387378078').each(function(){
+							   $(this).remove();
+						   });
 
 						   var dropdownContentActions = '';
 						   var templateData = {'templates': {}};
 						   $.each(data.Items, function(index, item) {
+
+							   // Set entityType, will be included with injected JS later.
+							   if(templateData.entityType != ''){
+								   templateData.entityType = item['EntityType'];
+							   }
+
+							   // Set ApplicationPath, will be included with injected JS later.
+							   if(templateData.applicationPath != ''){
+								   templateData.applicationPath = configurator.getApplicationPath();
+							   }
+
 							   templateData.templates[item['Id']] = {
 								   Description : item['Description']
 							   }
@@ -112,14 +126,12 @@ tau.mashups
 							   '</div>'
 						   });
 
-
-						   var dropdownSelector = '<div class="ui-menu-actions ui-menu-action-template">' +
+						   dropdownSelector = '<div class="ui-menu-actions ui-menu-action-template">' +
 							   '<span class="ui-menu__trigger i-role-trigger tau-bubble-target ui-link">Templates<span class="ui-menu__indicator"></span>' +
 							   '</span>' +
 						        '</div>';
 
-
-							var dropdownContent = '<div class="tau-bubble i-role-bubble ui-menu-actions__bubble i-orientation_top" ' +
+							dropdownContent = '<div class="tau-bubble i-role-bubble ui-menu-actions__bubble i-orientation_top" ' +
 						   'id="TpTemplate1387378078" data-orientation="top">' +
 							   '<div style="margin:0" role="content" class="tau-bubble__inner">' +
 								   '<div class="ui-menu-actions" style="">' +
@@ -139,6 +151,8 @@ tau.mashups
 						*
 						* * TODO: Should be beautified, with included from external file,
 						* but in testing this is not possible because we have no access to file system.
+						*
+						* return void
 						*/
 					   function insertCSS() {
 
@@ -154,17 +168,96 @@ tau.mashups
 						* Insert Javascript into the header
 						* TODO: Should be beautified, with included from external file,
 						* but in testing this is not possible because we have no access to file system.
+						*
+						* return void
 						*/
 					   function insertJS() {
+
 						   var js = "<script type=\"text/javascript\">" +
+
+									/*
+									Function getPostUrl, is used for Ajax.post to update the right entity type.
+									 */
+									"function getPostUrl (entityType) {" +
+										"return {" +
+													  "UserStory: \"/api/v1/Userstories?resultInclude=[Id,Name,Project]\"," +
+													  "Bug: \"/api/v1/Bugs?resultInclude=[Id,Name,Project]\"" +
+												  "}[entityType] || null" +
+									"}" +
+
+
+									// Hide the template dropdown when clicking outside or switching entity.
+									"$( document ).mouseup(function (e) {" +
+							   			"var container = $('#TpTemplate1387378078');" +
+										"if (!container.is(e.target) && container.has(e.target).length === 0) {" +
+											"container.removeClass('i-state_visible').hide();" +
+										"}" +
+						   			"});" +
+
+
 									"$( document ).ready(function() {" +
-										"$('.ui-menu-action-template').click(function(){" +
+										// Show/hide the templates dropdown
+										"$('.ui-menu-action-template').unbind('click').click(function(){" +
 											"if($('#TpTemplate1387378078').hasClass('i-state_visible')){" +
 												"$('#TpTemplate1387378078').removeClass('i-state_visible').hide();" +
 											"} else {" +
 												"$('#TpTemplate1387378078').addClass('i-state_visible').show();" +
 											"}" +
 										"});"+
+
+										// Click action for template selection
+										"$('#TpTemplate1387378078 .ui-menu__item').unbind('click').click(function(){" +
+											// Hide the templates dropdown on click.
+											"$('#TpTemplate1387378078').removeClass('i-state_visible').hide();" +
+
+											// Spliting the Id to match tempalteData.tempaltes index.
+											"var tempIdArray = $(this).data('id').split('_');" +
+											"var tempId = tempIdArray[1];" +
+											"containerId = $('.ui-description__inner.i-role-property.editable').attr('id');" +
+
+											"var allowTemplateInsertion = true;" +
+											// Check if description is already set.
+											"if(!$('#\'+containerId+\'').is(':empty')) {" +
+												"allowTemplateInsertion = false;" +
+											   "var response = confirm(\"There is already text in the description field, are you sure you want to overwrite?\");" +
+											   "if (response==true) {" +
+												   "allowTemplateInsertion=true;" +
+											   "}" +
+											"}; " +
+
+											// If allowTemplateInsertion update template description.
+											"if(allowTemplateInsertion) {" +
+
+												// Setting the description-content into both the div-placeholder and the rte-editor placeholder.
+												"$('#\'+containerId+\'').html(templateData.templates[tempId]['Description']);" +
+
+												// TODO: Might not be needed as we save on the fly..
+												"$('#cke_\'+containerId+\' .cke_wysiwyg_div').html(templateData.templates[tempId]['Description']);" +
+
+												// EntityType
+												"var entityType = templateData.entityType.Name;" +
+
+												// Get the entityId
+											   "var entityIdHtml = $('.entity-id .ui-link').html();" +
+											   "var entityIdArray = entityIdHtml.split('#');" +
+											   "var entityId = entityIdArray[1];" +
+
+												// assign description so it's easier to use later.
+											   "var description = templateData.templates[tempId]['Description'];" +
+												"var data = {\"Id\": entityId, \"Description\": description};" +
+
+												// Todo: Url needs to be path specific by using the: configurator.getApplicationPath()
+												"$.ajax({" +
+														   "type: 'POST'," +
+														   //"url:  '/api/v1/Userstories?resultInclude=[Id,Name,Project]', " +
+															"url: templateData.applicationPath + getPostUrl(entityType)," +
+														   "dataType: 'json', "+
+															"data: JSON.stringify(data)," +
+														   "contentType:\"application/json; charset=utf-8\"" +
+													   "});" +
+											"}" +
+
+										"})" +
 									"});"+
 									"</script>";
 
