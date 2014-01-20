@@ -126,6 +126,13 @@ tau.mashups
 							   '</div>'
 						   });
 
+						   if(dropdownContentActions.length < 1) {
+							   dropdownContentActions = '<div data-id="TemplateStoryID_NOTEMPLATE"' +
+							   'class="ui-menu__item ui-menu__item-action  i-role-action-attach to request ">' +
+							   '<span class="drop-down-option">No templates available</span>' +
+							   '</div>';
+						   }
+
 						   dropdownSelector = '<div class="ui-menu-actions ui-menu-action-template">' +
 							   '<span class="ui-menu__trigger i-role-trigger tau-bubble-target ui-link">Templates<span class="ui-menu__indicator"></span>' +
 							   '</span>' +
