@@ -6,18 +6,5 @@ WORK IN PROGRESS
 This mashup will load entity templates into a dropdown so you can select templates for your different entities.
 
 TODOs:
-
-* Make it more generic so it works for all entity types.
-* Move CSS and JS to separate files, so the code will be cleaner.
-* When resizing the browser window the position of "Templates"-dropdown should be recalculated.
-* When resizing the browser and the window gets more narrow, the "more"-tab should be triggered sooner.
-* Being able to copy fields value from template, like Business value, Severity and Custom fields (E.g. Release notes) etc.
-
-BUGS:
-
-* Template dropdown is not working in "light box" view when creating a new story.
-
-NICE TO HAVE:
-
-* What should happen if no templates available for given entity type? Suggest creating one?
-** If easy create new story with TPTEMPLATE Tag already, if not just tell to create a template for that entity type.
+The issues tracker for this template is moved to https://github.com/AOEpeople/TP3MashupLibrary/issues?state=open
+Feel free to add suggestions, improvements etc.
