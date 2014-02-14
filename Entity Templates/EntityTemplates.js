@@ -212,6 +212,38 @@ tau.mashups
 											"}" +
 										"});"+
 
+										// Fixing the positioning of the dropdown
+										"var templateDropdownOffset = $('.ui-menu-action-template').offset();" +
+
+										// Calculating position left.
+										"var templateDropdownBtnWidth = $('.ui-menu-action-template').width();" +
+										"var templateDropdownWidth = $('#TpTemplate1387378078').width();" +
+
+										"if(templateDropdownBtnWidth<templateDropdownWidth) {" +
+											"var templateDropdownPositionLeft = templateDropdownOffset.left - Math.abs(templateDropdownBtnWidth - templateDropdownWidth)" +
+										"} else {" +
+											"var templateDropdownPositionLeft = templateDropdownOffset.left + Math.abs(templateDropdownBtnWidth - templateDropdownWidth)" +
+										"}" +
+
+										// Calculating position top.
+										"var templateDropdownPositionTop = templateDropdownOffset.top+$('.ui-menu-action-template').height() + 3;" +
+
+										"$('#TpTemplate1387378078').css({'position':'fixed', 'left': templateDropdownPositionLeft , 'top': templateDropdownPositionTop});" +
+
+										"$( window ).resize(function() {" +
+											"var templateDropdownOffset = $('.ui-menu-action-template').offset();" +
+											"var templateDropdownBtnWidth = $('.ui-menu-action-template').width();" +
+											"var templateDropdownWidth = $('#TpTemplate1387378078').width();" +
+
+											"if(templateDropdownBtnWidth<templateDropdownWidth) {" +
+												"var templateDropdownPositionLeft = templateDropdownOffset.left - Math.abs(templateDropdownBtnWidth - templateDropdownWidth)" +
+											"} else {" +
+												"var templateDropdownPositionLeft = templateDropdownOffset.left + Math.abs(templateDropdownBtnWidth - templateDropdownWidth)" +
+											"}" +
+
+											"$('#TpTemplate1387378078').css({'position':'fixed', 'left': templateDropdownPositionLeft , 'top': templateDropdownPositionTop});" +
+										"});" +
+
 										// Click action for template selection
 										"$('#TpTemplate1387378078 .ui-menu__item').unbind('click').click(function(){" +
 											// Hide the templates dropdown on click.
